@@ -26,7 +26,7 @@
 
 - 出典は気象庁の公開 JSON。API キーは不要。
 - 取得ジョブは定義済みの全地区を処理する。観測ファイルがまだ無い地区はカタログ上 `hasData: false`。
-- 気象庁の地点 API は数日分しか返さない。履歴を残すため GitHub Actions が10分ごとに取得して `data/` へ commit する。
+- 気象庁の地点 API は数日分しか返さない。履歴を残すため GitHub Actions が1時間ごとに、不足している3時間スロットだけ取得して `data/` へ commit する。
 - データ更新 workflow は Pages をデプロイしない。本番サイトは `raw.githubusercontent.com` の `data/` を読む。
 - ローカルサイトはホスト名が `localhost` のとき `/data/` を読む。
 

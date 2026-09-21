@@ -1,7 +1,7 @@
 import json
 import tempfile
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from airpre.areas import AREAS, get_area, resolve_areas
@@ -11,6 +11,7 @@ from airpre.fetch import (
     dump_dataset,
     iter_slots,
     merge_observations,
+    missing_slots,
     parse_jma_time_key,
     parse_jma_value,
     parse_point_payload,
@@ -83,6 +84,35 @@ class MergeTests(unittest.TestCase):
             self.assertEqual(day["date"], "2026-09-21")
             self.assertEqual(day["stationId"], "46106")
             self.assertEqual(len(day["observations"]), 1)
+
+    def test_missing_slots_empty_when_complete(self) -> None:
+        latest = datetime(2026, 9, 21, 12, 30, tzinfo=JST)
+        existing = []
+        moment = latest - timedelta(days=1)
+        while moment <= latest:
+            existing.append({"time": moment.isoformat(timespec="seconds")})
+            moment += timedelta(minutes=10)
+        self.assertEqual(missing_slots(existing, latest, lookback_days=1), [])
+
+    def test_missing_slots_only_current_incomplete_slot(self) -> None:
+        latest = datetime(2026, 9, 21, 12, 30, tzinfo=JST)
+        existing = []
+        moment = latest - timedelta(days=1)
+        while moment <= datetime(2026, 9, 21, 11, 50, tzinfo=JST):
+            existing.append({"time": moment.isoformat(timespec="seconds")})
+            moment += timedelta(minutes=10)
+        self.assertEqual(missing_slots(existing, latest, lookback_days=1), [("20260921", "12")])
+
+    def test_missing_slots_detects_gap_in_past_slot(self) -> None:
+        latest = datetime(2026, 9, 21, 12, 30, tzinfo=JST)
+        gap = datetime(2026, 9, 21, 10, 20, tzinfo=JST)
+        existing = []
+        moment = latest - timedelta(days=1)
+        while moment <= latest:
+            if moment != gap:
+                existing.append({"time": moment.isoformat(timespec="seconds")})
+            moment += timedelta(minutes=10)
+        self.assertEqual(missing_slots(existing, latest, lookback_days=1), [("20260921", "09")])
 
     def test_dump_dataset_includes_area(self) -> None:
         area = next(iter(AREAS.values()))

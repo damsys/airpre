@@ -20,6 +20,7 @@ POINT_URL = "https://www.jma.go.jp/bosai/amedas/data/point/{station}/{stamp}.jso
 USER_AGENT = "airpre/0.1 (+https://github.com/damsys/airpre)"
 DEFAULT_LOOKBACK_DAYS = 7
 LATEST_WINDOW_DAYS = 14
+OBS_INTERVAL = timedelta(minutes=10)
 HTTP_TIMEOUT_SEC = 30
 
 LOGGER = logging.getLogger("airpre")
@@ -76,6 +77,11 @@ def align_to_slot(moment: datetime) -> datetime:
     return local.replace(hour=hour)
 
 
+def align_to_10min(moment: datetime) -> datetime:
+    local = moment.astimezone(JST).replace(second=0, microsecond=0)
+    return local.replace(minute=local.minute - local.minute % 10)
+
+
 def iter_slots(start: datetime, end: datetime) -> list[tuple[str, str]]:
     current = align_to_slot(start)
     last = align_to_slot(end)
@@ -83,6 +89,49 @@ def iter_slots(start: datetime, end: datetime) -> list[tuple[str, str]]:
     while current <= last:
         slots.append((current.strftime("%Y%m%d"), f"{current.hour:02d}"))
         current += timedelta(hours=3)
+    return slots
+
+
+def slot_key(moment: datetime) -> tuple[str, str]:
+    aligned = align_to_slot(moment)
+    return aligned.strftime("%Y%m%d"), f"{aligned.hour:02d}"
+
+
+def expected_observation_times(start: datetime, end: datetime) -> list[datetime]:
+    current = align_to_10min(start)
+    last = align_to_10min(end)
+    times: list[datetime] = []
+    while current <= last:
+        times.append(current)
+        current += OBS_INTERVAL
+    return times
+
+
+def load_archive_observations(archive_dir: Path) -> list[dict[str, Any]]:
+    merged: list[dict[str, Any]] = []
+    if not archive_dir.exists():
+        return merged
+    for path in sorted(archive_dir.glob("*.json")):
+        merged = merge_observations(merged, load_day_file(path))
+    return merged
+
+
+def missing_slots(
+    existing: list[dict[str, Any]],
+    latest_time: datetime,
+    lookback_days: int,
+) -> list[tuple[str, str]]:
+    have = {item["time"] for item in existing}
+    start = latest_time - timedelta(days=lookback_days)
+    slots: list[tuple[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for moment in expected_observation_times(start, latest_time):
+        if moment.isoformat(timespec="seconds") in have:
+            continue
+        key = slot_key(moment)
+        if key not in seen:
+            seen.add(key)
+            slots.append(key)
     return slots
 
 
@@ -217,14 +266,10 @@ def sync_archive(
     station_id: str,
 ) -> list[dict[str, Any]]:
     grouped = group_by_day(observations)
-    all_observations: list[dict[str, Any]] = []
-    touched_days = set(grouped)
-    if archive_dir.exists():
-        for path in archive_dir.glob("*.json"):
-            touched_days.add(path.stem)
-    for day in sorted(touched_days):
+    written: list[dict[str, Any]] = []
+    for day in sorted(grouped):
         path = archive_dir / f"{day}.json"
-        merged = merge_observations(load_day_file(path), grouped.get(day, []))
+        merged = merge_observations(load_day_file(path), grouped[day])
         write_json(
             path,
             {
@@ -233,47 +278,63 @@ def sync_archive(
                 "observations": merged,
             },
         )
-        all_observations.extend(merged)
-    return merge_observations([], all_observations)
+        written.extend(merged)
+    return merge_observations([], written)
 
 
 def collect_observations(
-    area: Area, latest_time: datetime, lookback_days: int
+    area: Area,
+    latest_time: datetime,
+    lookback_days: int,
+    archive_dir: Path,
 ) -> list[dict[str, Any]]:
-    start = latest_time - timedelta(days=lookback_days)
+    existing = load_archive_observations(archive_dir)
+    slots = missing_slots(existing, latest_time, lookback_days)
+    if not slots:
+        LOGGER.info("%s: no missing slots", area.id)
+        return []
+    LOGGER.info("%s: fetching %s missing slots", area.id, len(slots))
     incoming: list[dict[str, Any]] = []
-    for date, hour in iter_slots(start, latest_time):
+    for date, hour in slots:
         incoming = merge_observations(incoming, fetch_slot(area.station.id, date, hour))
         LOGGER.info("%s: fetched slot %s_%s (%s points)", area.id, date, hour, len(incoming))
     return incoming
 
 
-def run_area(area: Area, data_dir: Path, latest_time: datetime, lookback_days: int) -> int:
-    incoming = collect_observations(area, latest_time, lookback_days)
-    if not incoming:
-        LOGGER.error("%s: 観測データを1件も取得できませんでした", area.id)
-        return 1
+def run_area(
+    area: Area, data_dir: Path, latest_time: datetime, lookback_days: int
+) -> tuple[int, bool]:
     area_dir = data_dir / area.id
     archive_dir = area_dir / "archive"
-    merged = sync_archive(incoming, archive_dir, area.station.id)
+    incoming = collect_observations(area, latest_time, lookback_days, archive_dir)
+    if not incoming:
+        if load_archive_observations(archive_dir):
+            return 0, False
+        LOGGER.error("%s: 観測データを1件も取得できませんでした", area.id)
+        return 1, False
+    sync_archive(incoming, archive_dir, area.station.id)
     rebuild_latest(area, archive_dir, area_dir / "latest.json", latest_time)
     write_area_index(area, area_dir, archive_dir, latest_time)
     LOGGER.info(
-        "%s: saved %s observations through %s",
+        "%s: saved %s new observations through %s",
         area.id,
-        len(merged),
+        len(incoming),
         latest_time.astimezone(JST).isoformat(timespec="minutes"),
     )
-    return 0
+    return 0, True
 
 
 def run(data_dir: Path, lookback_days: int, area_ids: list[str] | None) -> int:
     areas = resolve_areas(area_ids)
     latest_time = fetch_latest_time()
     failed = 0
+    updated = False
     for area in areas:
-        failed += run_area(area, data_dir, latest_time, lookback_days)
-    write_catalog(data_dir, latest_time)
+        code, wrote = run_area(area, data_dir, latest_time, lookback_days)
+        failed += code
+        updated = updated or wrote
+    if updated:
+        write_catalog(data_dir, latest_time)
     return 1 if failed else 0
 
 
@@ -291,7 +352,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--lookback-days",
         type=int,
         default=DEFAULT_LOOKBACK_DAYS,
-        help="気象庁 API から遡って取得する日数（既定: 7）",
+        help="不足判定の対象にする遡及日数（既定: 7）",
     )
     parser.add_argument(
         "--area",

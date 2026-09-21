@@ -18,7 +18,7 @@ https://damsys.github.io/airpre/
 - 出典は [気象庁 AMeDAS](https://www.jma.go.jp/bosai/amedas/) の公開 JSON。API キーは不要。
 - 地区の定義は `src/airpre/areas.py`。取得対象を増やすときはここにエントリを足す。
 - 観測は `data/<area-id>/` に蓄積する。カタログは `data/areas.json`。
-- 地点 API は直近数日分しか返さないため、GitHub Actions が10分ごとに取得して commit する。
+- 地点 API は直近数日分しか返さないため、GitHub Actions が1時間ごとに不足分だけ取得して commit する。
 - データ更新 workflow は Pages をデプロイしない。
 
 都度ブラウザから気象庁へ取りに行く方式は、CORS・履歴の短さ・障害時の空白の点で不利なため採用していません。
