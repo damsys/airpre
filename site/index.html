@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="description" content="地区ごとの気圧変化を、気象庁の観測アーカイブからグラフ表示します。" />
+    <title>気圧 | airpre</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <p class="eyebrow">airpre</p>
+      <h1 id="area-title">気圧</h1>
+      <p class="lede" id="area-lede">気象庁の観測値を、地区ごとに蓄積したアーカイブから表示します。</p>
+    </header>
+
+    <main>
+      <section class="panel current" aria-live="polite">
+        <p class="label" id="series-label">海面更正気圧</p>
+        <p class="value"><span id="current-value">--.-</span><span class="unit">hPa</span></p>
+        <p class="meta" id="observed-at">観測時刻を読み込み中です</p>
+        <p class="trend" id="trend">—</p>
+      </section>
+
+      <section class="panel controls" aria-label="表示設定">
+        <div class="control-group">
+          <p class="control-label">地区</p>
+          <div class="chips" id="area-chips" role="group" aria-label="地区"></div>
+        </div>
+        <div class="control-group">
+          <p class="control-label">期間</p>
+          <div class="chips" role="group" aria-label="グラフの期間">
+            <button type="button" class="chip" data-range="6h">6時間</button>
+            <button type="button" class="chip is-active" data-range="24h">24時間</button>
+            <button type="button" class="chip" data-range="3d">3日</button>
+            <button type="button" class="chip" data-range="7d">7日</button>
+            <button type="button" class="chip" data-range="all">全期間</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <p class="control-label">気圧の種類</p>
+          <div class="chips" role="group" aria-label="気圧の種類">
+            <button type="button" class="chip is-active" data-series="pressureMsl">海面更正</button>
+            <button type="button" class="chip" data-series="pressure">現地気圧</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel chart-panel">
+        <h2>気圧の変化</h2>
+        <div class="chart-wrap">
+          <canvas id="chart" role="img" aria-label="気圧の時系列グラフ"></canvas>
+          <div id="tooltip" class="tooltip" hidden></div>
+        </div>
+        <p class="chart-hint">指やマウスをグラフに合わせると、その時刻の気圧を表示します。</p>
+      </section>
+
+      <section class="stats" aria-label="要約">
+        <article class="stat">
+          <p class="label">3時間変化</p>
+          <p class="stat-value" id="delta-3h">—</p>
+        </article>
+        <article class="stat">
+          <p class="label">表示期間の最低</p>
+          <p class="stat-value" id="range-min">—</p>
+        </article>
+        <article class="stat">
+          <p class="label">表示期間の最高</p>
+          <p class="stat-value" id="range-max">—</p>
+        </article>
+      </section>
+
+      <p class="status" id="status" hidden></p>
+    </main>
+
+    <footer>
+      <p>
+        出典:
+        <a id="source-link" href="https://www.jma.go.jp/bosai/amedas/" rel="noreferrer">気象庁 AMeDAS</a>
+      </p>
+      <p class="fineprint" id="station-note"></p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

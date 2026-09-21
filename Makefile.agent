@@ -1,0 +1,22 @@
+.PHONY: setup fetch-data check fmt serve-up serve-down
+
+setup:
+	mise install
+	mise exec -- uv sync
+
+fetch-data:
+	mise exec -- uv run airpre-fetch
+
+check:
+	mise exec -- uv run ruff check src tests
+	mise exec -- uv run python -m unittest discover -s tests -v
+
+fmt:
+	mise exec -- uv run ruff format src tests
+	mise exec -- uv run ruff check --fix src tests
+
+serve-up:
+	docker compose up -d --wait
+
+serve-down:
+	docker compose down

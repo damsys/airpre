@@ -1,0 +1,11 @@
+{
+  "updatedAt": "2026-09-21T12:30:00+09:00",
+  "areas": [
+    {
+      "id": "yokohama",
+      "name": "横浜市",
+      "hasData": true,
+      "latest": "data/yokohama/latest.json"
+    }
+  ]
+}
