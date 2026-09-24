@@ -16,7 +16,7 @@
     "note": "気象庁・横浜地方気象台の10分値を使用する。"
   },
   "timezone": "Asia/Tokyo",
-  "updatedAt": "2026-09-24T08:30:00+09:00",
+  "updatedAt": "2026-09-24T13:30:00+09:00",
   "source": {
     "name": "気象庁 AMeDAS",
     "url": "https://www.jma.go.jp/bosai/amedas/",
@@ -7027,6 +7027,156 @@
       "time": "2026-09-24T08:30:00+09:00",
       "pressure": 1010.6,
       "pressureMsl": 1015.6
+    },
+    {
+      "time": "2026-09-24T08:40:00+09:00",
+      "pressure": 1010.7,
+      "pressureMsl": 1015.7
+    },
+    {
+      "time": "2026-09-24T08:50:00+09:00",
+      "pressure": 1010.6,
+      "pressureMsl": 1015.5
+    },
+    {
+      "time": "2026-09-24T09:00:00+09:00",
+      "pressure": 1010.5,
+      "pressureMsl": 1015.4
+    },
+    {
+      "time": "2026-09-24T09:10:00+09:00",
+      "pressure": 1010.3,
+      "pressureMsl": 1015.2
+    },
+    {
+      "time": "2026-09-24T09:20:00+09:00",
+      "pressure": 1010.4,
+      "pressureMsl": 1015.3
+    },
+    {
+      "time": "2026-09-24T09:30:00+09:00",
+      "pressure": 1010.6,
+      "pressureMsl": 1015.5
+    },
+    {
+      "time": "2026-09-24T09:40:00+09:00",
+      "pressure": 1010.5,
+      "pressureMsl": 1015.4
+    },
+    {
+      "time": "2026-09-24T09:50:00+09:00",
+      "pressure": 1010.4,
+      "pressureMsl": 1015.3
+    },
+    {
+      "time": "2026-09-24T10:00:00+09:00",
+      "pressure": 1010.3,
+      "pressureMsl": 1015.2
+    },
+    {
+      "time": "2026-09-24T10:10:00+09:00",
+      "pressure": 1010.3,
+      "pressureMsl": 1015.2
+    },
+    {
+      "time": "2026-09-24T10:20:00+09:00",
+      "pressure": 1010.0,
+      "pressureMsl": 1014.9
+    },
+    {
+      "time": "2026-09-24T10:30:00+09:00",
+      "pressure": 1009.8,
+      "pressureMsl": 1014.7
+    },
+    {
+      "time": "2026-09-24T10:40:00+09:00",
+      "pressure": 1009.7,
+      "pressureMsl": 1014.6
+    },
+    {
+      "time": "2026-09-24T10:50:00+09:00",
+      "pressure": 1009.6,
+      "pressureMsl": 1014.5
+    },
+    {
+      "time": "2026-09-24T11:00:00+09:00",
+      "pressure": 1009.5,
+      "pressureMsl": 1014.4
+    },
+    {
+      "time": "2026-09-24T11:10:00+09:00",
+      "pressure": 1009.4,
+      "pressureMsl": 1014.3
+    },
+    {
+      "time": "2026-09-24T11:20:00+09:00",
+      "pressure": 1009.3,
+      "pressureMsl": 1014.2
+    },
+    {
+      "time": "2026-09-24T11:30:00+09:00",
+      "pressure": 1009.3,
+      "pressureMsl": 1014.2
+    },
+    {
+      "time": "2026-09-24T11:40:00+09:00",
+      "pressure": 1009.1,
+      "pressureMsl": 1014.0
+    },
+    {
+      "time": "2026-09-24T11:50:00+09:00",
+      "pressure": 1009.0,
+      "pressureMsl": 1013.9
+    },
+    {
+      "time": "2026-09-24T12:00:00+09:00",
+      "pressure": 1008.7,
+      "pressureMsl": 1013.6
+    },
+    {
+      "time": "2026-09-24T12:10:00+09:00",
+      "pressure": 1008.6,
+      "pressureMsl": 1013.5
+    },
+    {
+      "time": "2026-09-24T12:20:00+09:00",
+      "pressure": 1008.5,
+      "pressureMsl": 1013.4
+    },
+    {
+      "time": "2026-09-24T12:30:00+09:00",
+      "pressure": 1008.3,
+      "pressureMsl": 1013.2
+    },
+    {
+      "time": "2026-09-24T12:40:00+09:00",
+      "pressure": 1008.1,
+      "pressureMsl": 1012.9
+    },
+    {
+      "time": "2026-09-24T12:50:00+09:00",
+      "pressure": 1008.0,
+      "pressureMsl": 1012.9
+    },
+    {
+      "time": "2026-09-24T13:00:00+09:00",
+      "pressure": 1007.9,
+      "pressureMsl": 1012.7
+    },
+    {
+      "time": "2026-09-24T13:10:00+09:00",
+      "pressure": 1007.7,
+      "pressureMsl": 1012.6
+    },
+    {
+      "time": "2026-09-24T13:20:00+09:00",
+      "pressure": 1007.6,
+      "pressureMsl": 1012.5
+    },
+    {
+      "time": "2026-09-24T13:30:00+09:00",
+      "pressure": 1007.6,
+      "pressureMsl": 1012.5
     }
   ]
 }
