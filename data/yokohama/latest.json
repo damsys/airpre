@@ -16,7 +16,7 @@
     "note": "気象庁・横浜地方気象台の10分値を使用する。"
   },
   "timezone": "Asia/Tokyo",
-  "updatedAt": "2026-09-27T02:00:00+09:00",
+  "updatedAt": "2026-09-27T04:40:00+09:00",
   "source": {
     "name": "気象庁 AMeDAS",
     "url": "https://www.jma.go.jp/bosai/amedas/",
@@ -8992,6 +8992,86 @@
       "time": "2026-09-27T02:00:00+09:00",
       "pressure": 1006.4,
       "pressureMsl": 1011.4
+    },
+    {
+      "time": "2026-09-27T02:10:00+09:00",
+      "pressure": 1006.2,
+      "pressureMsl": 1011.2
+    },
+    {
+      "time": "2026-09-27T02:20:00+09:00",
+      "pressure": 1006.1,
+      "pressureMsl": 1011.1
+    },
+    {
+      "time": "2026-09-27T02:30:00+09:00",
+      "pressure": 1006.0,
+      "pressureMsl": 1011.0
+    },
+    {
+      "time": "2026-09-27T02:40:00+09:00",
+      "pressure": 1006.0,
+      "pressureMsl": 1011.0
+    },
+    {
+      "time": "2026-09-27T02:50:00+09:00",
+      "pressure": 1006.0,
+      "pressureMsl": 1011.0
+    },
+    {
+      "time": "2026-09-27T03:00:00+09:00",
+      "pressure": 1005.9,
+      "pressureMsl": 1010.9
+    },
+    {
+      "time": "2026-09-27T03:10:00+09:00",
+      "pressure": 1005.7,
+      "pressureMsl": 1010.7
+    },
+    {
+      "time": "2026-09-27T03:20:00+09:00",
+      "pressure": 1005.8,
+      "pressureMsl": 1010.8
+    },
+    {
+      "time": "2026-09-27T03:30:00+09:00",
+      "pressure": 1005.9,
+      "pressureMsl": 1010.9
+    },
+    {
+      "time": "2026-09-27T03:40:00+09:00",
+      "pressure": 1005.7,
+      "pressureMsl": 1010.7
+    },
+    {
+      "time": "2026-09-27T03:50:00+09:00",
+      "pressure": 1005.7,
+      "pressureMsl": 1010.7
+    },
+    {
+      "time": "2026-09-27T04:00:00+09:00",
+      "pressure": 1006.0,
+      "pressureMsl": 1011.0
+    },
+    {
+      "time": "2026-09-27T04:10:00+09:00",
+      "pressure": 1006.1,
+      "pressureMsl": 1011.1
+    },
+    {
+      "time": "2026-09-27T04:20:00+09:00",
+      "pressure": 1006.0,
+      "pressureMsl": 1011.0
+    },
+    {
+      "time": "2026-09-27T04:30:00+09:00",
+      "pressure": 1006.0,
+      "pressureMsl": 1011.0
+    },
+    {
+      "time": "2026-09-27T04:40:00+09:00",
+      "pressure": 1005.8,
+      "pressureMsl": 1010.8
     }
   ]
 }
