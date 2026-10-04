@@ -7,8 +7,9 @@
     areaId: null,
     data: null,
     range: "24h",
-    series: "pressureMsl",
+    series: "pressure",
     points: [],
+    alertIntervals: [],
   };
 
   const els = {
@@ -25,9 +26,20 @@
     status: document.getElementById("status"),
     chart: document.getElementById("chart"),
     tooltip: document.getElementById("tooltip"),
+    chartHint: document.getElementById("chart-hint"),
     stationNote: document.getElementById("station-note"),
     sourceLink: document.getElementById("source-link"),
   };
+
+  function changeAlertConfig() {
+    const alert = config.changeAlert || {};
+    const windowHours = Number(alert.windowHours);
+    const thresholdHpa = Number(alert.thresholdHpa);
+    return {
+      windowHours: Number.isFinite(windowHours) && windowHours > 0 ? windowHours : 2,
+      thresholdHpa: Number.isFinite(thresholdHpa) && thresholdHpa > 0 ? thresholdHpa : 1.0,
+    };
+  }
 
   const rangeMs = {
     "6h": 6 * 60 * 60 * 1000,
@@ -135,6 +147,109 @@
     return best;
   }
 
+  function seriesPoints(observations, seriesKey) {
+    return observations
+      .map((item) => {
+        const value = item[seriesKey];
+        if (value == null) {
+          return null;
+        }
+        return { time: item.time, ms: Date.parse(item.time), value };
+      })
+      .filter(Boolean);
+  }
+
+  function findAlertIntervals(points, windowHours, thresholdHpa) {
+    if (points.length < 2) {
+      return [];
+    }
+    const windowMs = windowHours * 60 * 60 * 1000;
+    const matchSlackMs = 25 * 60 * 1000;
+    const flagged = [];
+    let lookbackIndex = 0;
+
+    for (let i = 0; i < points.length; i += 1) {
+      const point = points[i];
+      const targetMs = point.ms - windowMs;
+      while (lookbackIndex < i && points[lookbackIndex].ms < targetMs - matchSlackMs) {
+        lookbackIndex += 1;
+      }
+      let baseline = null;
+      for (let j = lookbackIndex; j < i; j += 1) {
+        const candidate = points[j];
+        const skew = Math.abs(candidate.ms - targetMs);
+        if (skew > matchSlackMs) {
+          if (candidate.ms > targetMs + matchSlackMs) {
+            break;
+          }
+          continue;
+        }
+        if (!baseline || skew < baseline.skew) {
+          baseline = { ...candidate, skew };
+        }
+      }
+      if (!baseline) {
+        continue;
+      }
+      const delta = point.value - baseline.value;
+      if (Math.abs(delta) >= thresholdHpa) {
+        // lookback 全幅だと広がりすぎるので、後半半分を塗る
+        const halfWindowMs = windowMs / 2;
+        flagged.push({
+          startMs: Math.max(baseline.ms, point.ms - halfWindowMs),
+          endMs: point.ms,
+          delta,
+        });
+      }
+    }
+
+    if (!flagged.length) {
+      return [];
+    }
+
+    flagged.sort((a, b) => a.startMs - b.startMs || a.endMs - b.endMs);
+    const gapMs = 30 * 60 * 1000;
+    const intervals = [];
+    let current = {
+      startMs: flagged[0].startMs,
+      endMs: flagged[0].endMs,
+      sumDelta: flagged[0].delta,
+      count: 1,
+    };
+    for (let i = 1; i < flagged.length; i += 1) {
+      const item = flagged[i];
+      if (item.startMs <= current.endMs + gapMs) {
+        current.endMs = Math.max(current.endMs, item.endMs);
+        current.sumDelta += item.delta;
+        current.count += 1;
+      } else {
+        intervals.push(current);
+        current = {
+          startMs: item.startMs,
+          endMs: item.endMs,
+          sumDelta: item.delta,
+          count: 1,
+        };
+      }
+    }
+    intervals.push(current);
+    return intervals.map((interval) => ({
+      startMs: interval.startMs,
+      endMs: interval.endMs,
+      direction: interval.sumDelta / interval.count >= 0 ? "rise" : "fall",
+    }));
+  }
+
+  function intervalsInView(intervals, minX, maxX) {
+    return intervals
+      .map((interval) => ({
+        ...interval,
+        startMs: Math.max(interval.startMs, minX),
+        endMs: Math.min(interval.endMs, maxX),
+      }))
+      .filter((interval) => interval.endMs >= interval.startMs);
+  }
+
   function renderAreaMeta() {
     const area = currentArea();
     const name = state.data?.area?.name || area?.name || "気圧";
@@ -225,7 +340,32 @@
     return { min: min - padding, max: max + padding };
   }
 
-  function drawChart(points) {
+  function drawAlertBands(ctx, intervals, xOf, margin, plotH) {
+    const minBandWidth = 3;
+    for (const interval of intervals) {
+      const x1 = xOf(interval.startMs);
+      const x2 = xOf(interval.endMs);
+      const width = Math.max(x2 - x1, minBandWidth);
+      ctx.fillStyle =
+        interval.direction === "rise" ? "rgba(52, 211, 153, 0.16)" : "rgba(251, 113, 133, 0.18)";
+      ctx.fillRect(x1, margin.top, width, plotH);
+    }
+  }
+
+  function updateChartHint(alert, visibleAlerts) {
+    if (!els.chartHint) {
+      return;
+    }
+    const base = "指やマウスをグラフに合わせると、その時刻の気圧を表示します。";
+    const rule = `急変マーク: ${alert.windowHours}時間で ${alert.thresholdHpa} hPa 以上の変化があった時間帯。`;
+    const count =
+      visibleAlerts.length > 0
+        ? `表示期間に ${visibleAlerts.length} 区間。`
+        : "表示期間に該当区間なし。";
+    els.chartHint.textContent = `${base} ${rule} ${count}`;
+  }
+
+  function drawChart(points, alertIntervals) {
     const canvas = els.chart;
     const tooltip = els.tooltip;
     const ctx = canvas.getContext("2d");
@@ -240,6 +380,7 @@
     const margin = { top: 16, right: 12, bottom: 28, left: 46 };
     const plotW = width - margin.left - margin.right;
     const plotH = height - margin.top - margin.bottom;
+    const alert = changeAlertConfig();
 
     if (points.length < 2) {
       tooltip.hidden = true;
@@ -248,6 +389,7 @@
       ctx.fillText("グラフを描くには観測が2点以上必要です", margin.left, height / 2);
       canvas.onpointermove = null;
       canvas.onpointerleave = null;
+      updateChartHint(alert, []);
       return;
     }
 
@@ -256,9 +398,12 @@
     const values = points.map((point) => point.value);
     const { min: minY, max: maxY } = niceRange(Math.min(...values), Math.max(...values));
     const span = Math.max(maxX - minX, 1);
+    const visibleAlerts = intervalsInView(alertIntervals, minX, maxX);
 
     const xOf = (ms) => margin.left + ((ms - minX) / span) * plotW;
     const yOf = (value) => margin.top + ((maxY - value) / (maxY - minY)) * plotH;
+
+    drawAlertBands(ctx, visibleAlerts, xOf, margin, plotH);
 
     ctx.strokeStyle = "#2a3b57";
     ctx.fillStyle = "#93a4bf";
@@ -327,13 +472,24 @@
       );
     }
 
+    function windowDelta(point) {
+      const baseline = findAround(points, point.ms - alert.windowHours * 60 * 60 * 1000, 25 * 60 * 1000);
+      if (!baseline) {
+        return null;
+      }
+      return point.value - baseline.value;
+    }
+
     function showTooltip(point) {
       const x = xOf(point.ms);
       const y = yOf(point.value);
+      const delta = windowDelta(point);
+      const deltaText =
+        delta == null ? "" : ` / ${alert.windowHours}h ${signed(delta)} hPa`;
       tooltip.hidden = false;
       tooltip.style.left = `${x}px`;
       tooltip.style.top = `${y}px`;
-      tooltip.textContent = `${formatDateTime(point.time)} / ${formatNumber(point.value)} hPa`;
+      tooltip.textContent = `${formatDateTime(point.time)} / ${formatNumber(point.value)} hPa${deltaText}`;
     }
 
     canvas.onpointermove = (event) => {
@@ -342,13 +498,21 @@
     canvas.onpointerleave = () => {
       tooltip.hidden = true;
     };
+    updateChartHint(alert, visibleAlerts);
   }
 
   function render() {
     renderAreaMeta();
     state.points = visiblePoints();
+    const alert = changeAlertConfig();
+    const allPoints = seriesPoints(state.data?.observations || [], state.series);
+    state.alertIntervals = findAlertIntervals(
+      allPoints,
+      alert.windowHours,
+      alert.thresholdHpa
+    );
     renderStats(state.points);
-    drawChart(state.points);
+    drawChart(state.points, state.alertIntervals);
   }
 
   async function loadArea(areaId) {

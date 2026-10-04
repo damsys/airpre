@@ -177,6 +177,36 @@ main {
   opacity: 0.55;
 }
 
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin: -0.2rem 0 0.7rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-item::before {
+  content: "";
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+}
+
+.legend-fall::before {
+  background: rgba(251, 113, 133, 0.45);
+}
+
+.legend-rise::before {
+  background: rgba(52, 211, 153, 0.45);
+}
+
 .chart-wrap {
   position: relative;
   height: min(42vw, 360px);

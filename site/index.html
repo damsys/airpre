@@ -18,7 +18,7 @@
 
     <main>
       <section class="panel current" aria-live="polite">
-        <p class="label" id="series-label">海面更正気圧</p>
+        <p class="label" id="series-label">現地気圧</p>
         <p class="value"><span id="current-value">--.-</span><span class="unit">hPa</span></p>
         <p class="meta" id="observed-at">観測時刻を読み込み中です</p>
         <p class="trend" id="trend">—</p>
@@ -42,19 +42,23 @@
         <div class="control-group">
           <p class="control-label">気圧の種類</p>
           <div class="chips" role="group" aria-label="気圧の種類">
-            <button type="button" class="chip is-active" data-series="pressureMsl">海面更正</button>
-            <button type="button" class="chip" data-series="pressure">現地気圧</button>
+            <button type="button" class="chip" data-series="pressureMsl">海面更正</button>
+            <button type="button" class="chip is-active" data-series="pressure">現地気圧</button>
           </div>
         </div>
       </section>
 
       <section class="panel chart-panel">
         <h2>気圧の変化</h2>
+        <div class="chart-legend" aria-hidden="true">
+          <span class="legend-item legend-fall">急降下帯</span>
+          <span class="legend-item legend-rise">急上昇帯</span>
+        </div>
         <div class="chart-wrap">
           <canvas id="chart" role="img" aria-label="気圧の時系列グラフ"></canvas>
           <div id="tooltip" class="tooltip" hidden></div>
         </div>
-        <p class="chart-hint">指やマウスをグラフに合わせると、その時刻の気圧を表示します。</p>
+        <p class="chart-hint" id="chart-hint">指やマウスをグラフに合わせると、その時刻の気圧を表示します。</p>
       </section>
 
       <section class="stats" aria-label="要約">
