@@ -16,93 +16,13 @@
     "note": "気象庁・横浜地方気象台の10分値を使用する。"
   },
   "timezone": "Asia/Tokyo",
-  "updatedAt": "2026-10-19T05:20:00+09:00",
+  "updatedAt": "2026-10-19T08:00:00+09:00",
   "source": {
     "name": "気象庁 AMeDAS",
     "url": "https://www.jma.go.jp/bosai/amedas/",
     "stationId": "46106"
   },
   "observations": [
-    {
-      "time": "2026-10-05T05:20:00+09:00",
-      "pressure": 1010.0,
-      "pressureMsl": 1015.0
-    },
-    {
-      "time": "2026-10-05T05:30:00+09:00",
-      "pressure": 1010.1,
-      "pressureMsl": 1015.1
-    },
-    {
-      "time": "2026-10-05T05:40:00+09:00",
-      "pressure": 1009.8,
-      "pressureMsl": 1014.8
-    },
-    {
-      "time": "2026-10-05T05:50:00+09:00",
-      "pressure": 1009.9,
-      "pressureMsl": 1014.9
-    },
-    {
-      "time": "2026-10-05T06:00:00+09:00",
-      "pressure": 1009.8,
-      "pressureMsl": 1014.8
-    },
-    {
-      "time": "2026-10-05T06:10:00+09:00",
-      "pressure": 1009.9,
-      "pressureMsl": 1014.9
-    },
-    {
-      "time": "2026-10-05T06:20:00+09:00",
-      "pressure": 1010.0,
-      "pressureMsl": 1015.0
-    },
-    {
-      "time": "2026-10-05T06:30:00+09:00",
-      "pressure": 1010.0,
-      "pressureMsl": 1015.0
-    },
-    {
-      "time": "2026-10-05T06:40:00+09:00",
-      "pressure": 1010.1,
-      "pressureMsl": 1015.1
-    },
-    {
-      "time": "2026-10-05T06:50:00+09:00",
-      "pressure": 1010.1,
-      "pressureMsl": 1015.1
-    },
-    {
-      "time": "2026-10-05T07:00:00+09:00",
-      "pressure": 1010.1,
-      "pressureMsl": 1015.1
-    },
-    {
-      "time": "2026-10-05T07:10:00+09:00",
-      "pressure": 1010.1,
-      "pressureMsl": 1015.1
-    },
-    {
-      "time": "2026-10-05T07:20:00+09:00",
-      "pressure": 1010.0,
-      "pressureMsl": 1015.0
-    },
-    {
-      "time": "2026-10-05T07:30:00+09:00",
-      "pressure": 1010.1,
-      "pressureMsl": 1015.1
-    },
-    {
-      "time": "2026-10-05T07:40:00+09:00",
-      "pressure": 1010.0,
-      "pressureMsl": 1015.0
-    },
-    {
-      "time": "2026-10-05T07:50:00+09:00",
-      "pressure": 1009.9,
-      "pressureMsl": 1014.9
-    },
     {
       "time": "2026-10-05T08:00:00+09:00",
       "pressure": 1009.8,
@@ -10112,6 +10032,81 @@
       "time": "2026-10-19T05:30:00+09:00",
       "pressure": 1018.3,
       "pressureMsl": 1023.3
+    },
+    {
+      "time": "2026-10-19T05:40:00+09:00",
+      "pressure": 1018.2,
+      "pressureMsl": 1023.2
+    },
+    {
+      "time": "2026-10-19T05:50:00+09:00",
+      "pressure": 1018.1,
+      "pressureMsl": 1023.1
+    },
+    {
+      "time": "2026-10-19T06:00:00+09:00",
+      "pressure": 1018.1,
+      "pressureMsl": 1023.1
+    },
+    {
+      "time": "2026-10-19T06:10:00+09:00",
+      "pressure": 1018.1,
+      "pressureMsl": 1023.1
+    },
+    {
+      "time": "2026-10-19T06:20:00+09:00",
+      "pressure": 1018.0,
+      "pressureMsl": 1023.0
+    },
+    {
+      "time": "2026-10-19T06:30:00+09:00",
+      "pressure": 1018.0,
+      "pressureMsl": 1023.0
+    },
+    {
+      "time": "2026-10-19T06:40:00+09:00",
+      "pressure": 1018.0,
+      "pressureMsl": 1023.0
+    },
+    {
+      "time": "2026-10-19T06:50:00+09:00",
+      "pressure": 1018.2,
+      "pressureMsl": 1023.2
+    },
+    {
+      "time": "2026-10-19T07:00:00+09:00",
+      "pressure": 1018.1,
+      "pressureMsl": 1023.1
+    },
+    {
+      "time": "2026-10-19T07:10:00+09:00",
+      "pressure": 1018.0,
+      "pressureMsl": 1023.0
+    },
+    {
+      "time": "2026-10-19T07:20:00+09:00",
+      "pressure": 1017.9,
+      "pressureMsl": 1022.9
+    },
+    {
+      "time": "2026-10-19T07:30:00+09:00",
+      "pressure": 1018.0,
+      "pressureMsl": 1023.0
+    },
+    {
+      "time": "2026-10-19T07:40:00+09:00",
+      "pressure": 1017.9,
+      "pressureMsl": 1022.9
+    },
+    {
+      "time": "2026-10-19T07:50:00+09:00",
+      "pressure": 1017.9,
+      "pressureMsl": 1022.9
+    },
+    {
+      "time": "2026-10-19T08:00:00+09:00",
+      "pressure": 1018.1,
+      "pressureMsl": 1023.1
     }
   ]
 }
