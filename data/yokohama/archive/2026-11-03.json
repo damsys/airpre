@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-03",
+  "stationId": "46106",
+  "observations": [
+    {
+      "time": "2026-11-03T00:00:00+09:00",
+      "pressure": 1009.0,
+      "pressureMsl": 1014.1
+    },
+    {
+      "time": "2026-11-03T00:10:00+09:00",
+      "pressure": 1009.1,
+      "pressureMsl": 1014.2
+    },
+    {
+      "time": "2026-11-03T00:20:00+09:00",
+      "pressure": 1009.2,
+      "pressureMsl": 1014.3
+    },
+    {
+      "time": "2026-11-03T00:30:00+09:00",
+      "pressure": 1009.3,
+      "pressureMsl": 1014.4
+    }
+  ]
+}
