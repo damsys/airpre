@@ -1,0 +1,11 @@
+{
+  "date": "2026-11-27",
+  "stationId": "46106",
+  "observations": [
+    {
+      "time": "2026-11-27T00:00:00+09:00",
+      "pressure": 1017.8,
+      "pressureMsl": 1023.0
+    }
+  ]
+}
